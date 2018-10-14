@@ -87,11 +87,12 @@ function startWebRTC(isOfferer) {
     localVideo.srcObject = stream;
 
     // face mask here
-    // faceMask(stream);
-    // stream = document.getElementById('localCanvas').captureStream(0);
+    faceMask(stream);
+    mediaStream = document.getElementById('localCanvas').captureStream(25);
+    pc.addStream(mediaStream);
 
     // Add your stream to be sent to the conneting peer
-    stream.getTracks().forEach(track => pc.addTrack(track, faceMask(stream)));
+    // stream.getTracks().forEach(track => pc.addTrack(track, faceMask(stream)));
   }, onError);
 
     

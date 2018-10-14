@@ -79,6 +79,22 @@ function startWebRTC(isOfferer) {
   };
     
 // getUserMedia modify
+    
+    navigator.getUserMedia = navigator.getUserMedia ||
+                         navigator.webkitGetUserMedia ||
+                         navigator.mozGetUserMedia;
+        
+        
+    if(navigator.getUserMedia) {
+        const constraints = { audio: false, video: true };
+        navigator.getUserMedia(constraints, faceMask, onError);
+        mediaStream = document.getElementById('localCanvas').captureStream(25);
+        pc.addStream(mediaStream);
+    }
+    else{
+        console.log("Browser not supoorted!!!");
+    }
+/*    
   navigator.mediaDevices.getUserMedia({
     audio: false,
     video: true,
@@ -94,7 +110,7 @@ function startWebRTC(isOfferer) {
     // Add your stream to be sent to the conneting peer
     // stream.getTracks().forEach(track => pc.addTrack(track, faceMask(stream)));
   }, onError);
-
+*/
     
   // Listen to signaling data from Scaledrone
   room.on('data', (message, client) => {
@@ -131,6 +147,7 @@ function localDescCreated(desc) {
 function faceMask(stream) {
     
     console.log("stream found!!!");
+    localVideo.srcObject = stream;
     
     var video = document.getElementById('localVideo');
     var canvas = document.getElementById('localCanvas');
@@ -159,5 +176,5 @@ function faceMask(stream) {
         });
       });
     
-    return canvas.captureStream(25);
+    // return canvas.captureStream(25);
 }

@@ -50,6 +50,8 @@ function sendMessage(message) {
   });
 }
 
+var mediaStream;
+
 function startWebRTC(isOfferer) {
   pc = new RTCPeerConnection(configuration);
 
@@ -73,23 +75,8 @@ function startWebRTC(isOfferer) {
     const stream = event.streams[0];
     if (!remoteVideo.srcObject || remoteVideo.srcObject.id !== stream.id) {
       remoteVideo.srcObject = stream;
-      faceMask(stream, '#remoteVideo');
     }
   };
-
-    /*
-    navigator.getUserMedia = navigator.getUserMedia ||
-                         navigator.webkitGetUserMedia ||
-                         navigator.mozGetUserMedia;
-
-    if(navigator.getUserMedia) {
-        const constraints = { audio: false, video: true };
-        navigator.getUserMedia(constraints, faceMask, streamErr);
-    }
-    else {
-        console.log("Browser not supported!!!");
-    }
-*/
     
 // getUserMedia modify
   navigator.mediaDevices.getUserMedia({
@@ -98,12 +85,13 @@ function startWebRTC(isOfferer) {
   }).then(stream => {
     // Display your local video in #localVideo element
     localVideo.srcObject = stream;
-      
+
     // face mask here
-    faceMask(stream, '#localVideo');
+    // faceMask(stream);
+    // stream = document.getElementById('localCanvas').captureStream(0);
 
     // Add your stream to be sent to the conneting peer
-    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+    stream.getTracks().forEach(track => pc.addTrack(track, faceMask(stream)));
   }, onError);
 
     
@@ -139,15 +127,13 @@ function localDescCreated(desc) {
   );
 }
 
-
-function faceMask(stream, area) {
+function faceMask(stream) {
     
     console.log("stream found!!!");
-
+    
     var video = document.getElementById('localVideo');
-    var canvas = document.getElementById('canvas');
+    var canvas = document.getElementById('localCanvas');
     var context = canvas.getContext('2d');
-    // localVideo.srcObject = stream;
 
     // set tracker option
     var tracker = new tracking.ObjectTracker('face');
@@ -155,26 +141,22 @@ function faceMask(stream, area) {
     tracker.setStepSize(2);
     tracker.setEdgesDensity(0.1);
 
-    tracking.track(area, tracker);
+    tracking.track('#localVideo', tracker);
 
     tracker.on('track', function(event) {
         
-        console.log(area + "track successful!!!");
+        // console.log(peer + " track successful!!!");
         
         context.clearRect(0, 0, canvas.width, canvas.height);
-        // context.drawImage(stream, 0, 0);
+        // context.drawImage(document.getElementById('localVideo'), 0, 0, canvas.width, canvas.height);
 
         event.data.forEach(function(rect) {
-        context.strokeStyle = '#a64ceb'; 
-        context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-        context.font = '11px Helvetica';
-        context.fillStyle = "#f5f";
-        // context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11); // context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
-        context.fillRect(rect.x, rect.y, rect.width, rect.height);    
+
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            context.fillStyle = "#f5f";
+            context.fillRect(rect.x, rect.y, rect.width, rect.height);   
         });
       });
-}
-
-function streamErr (err) {
-    console.log("error occured");
+    
+    return canvas.captureStream(25);
 }

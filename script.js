@@ -73,6 +73,7 @@ function startWebRTC(isOfferer) {
     const stream = event.streams[0];
     if (!remoteVideo.srcObject || remoteVideo.srcObject.id !== stream.id) {
       remoteVideo.srcObject = stream;
+      faceMask(stream, '#remoteVideo');
     }
   };
 
@@ -99,7 +100,7 @@ function startWebRTC(isOfferer) {
     localVideo.srcObject = stream;
       
     // face mask here
-      faceMask(stream);
+    faceMask(stream, '#localVideo');
 
     // Add your stream to be sent to the conneting peer
     stream.getTracks().forEach(track => pc.addTrack(track, stream));
@@ -139,14 +140,14 @@ function localDescCreated(desc) {
 }
 
 
-function faceMask(stream) {
+function faceMask(stream, area) {
     
     console.log("stream found!!!");
 
     var video = document.getElementById('localVideo');
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
-    localVideo.srcObject = stream;
+    // localVideo.srcObject = stream;
 
     // set tracker option
     var tracker = new tracking.ObjectTracker('face');
@@ -154,11 +155,11 @@ function faceMask(stream) {
     tracker.setStepSize(2);
     tracker.setEdgesDensity(0.1);
 
-    tracking.track('#localVideo', tracker);
+    tracking.track(area, tracker);
 
     tracker.on('track', function(event) {
         
-        console.log("track successful!!!");
+        console.log(area + "track successful!!!");
         
         context.clearRect(0, 0, canvas.width, canvas.height);
         // context.drawImage(stream, 0, 0);
@@ -169,7 +170,7 @@ function faceMask(stream) {
         context.font = '11px Helvetica';
         context.fillStyle = "#f5f";
         // context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11); // context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
-        context.fillRect(rect.x, rect.y, rect.width, rect.height);
+        context.fillRect(rect.x, rect.y, rect.width, rect.height);    
         });
       });
 }

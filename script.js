@@ -51,15 +51,18 @@ function sendMessage(message) {
 }
 
 var mediaStream;
+var isSetRemoteCandi;
 
 function startWebRTC(isOfferer) {
   pc = new RTCPeerConnection(configuration);
+  isSetRemoteCandi = false;
 
   // 'onicecandidate' notifies us whenever an ICE agent needs to deliver a
   // message to the other peer through the signaling server
   pc.onicecandidate = event => {
     if (event.candidate) {
       sendMessage({'candidate': event.candidate});
+      console.log("ice candi event");
     }
   };
 
@@ -67,6 +70,7 @@ function startWebRTC(isOfferer) {
   if (isOfferer) {
     pc.onnegotiationneeded = () => {
       pc.createOffer().then(localDescCreated).catch(onError);
+      console.log("offer created");
     }
   }
 
@@ -141,6 +145,8 @@ function startWebRTC(isOfferer) {
     }
 
     if (message.sdp) {
+        
+        console.log("message SDP received");
       // This is called after receiving an offer or answer from another peer
       pc.setRemoteDescription(new RTCSessionDescription(message.sdp), () => {
         // When receiving an offer lets answer it
@@ -149,10 +155,14 @@ function startWebRTC(isOfferer) {
         }
       }, onError);
     } else if (message.candidate) {
+        console.log("candi info received");
       // Add the new ICE candidate to our connections remote description
       pc.addIceCandidate(
         new RTCIceCandidate(message.candidate), onSuccess, onError
       );
+    }
+    else {
+        console.log("SDP or candidate nothing specified!!");
     }
   });
 }

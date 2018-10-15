@@ -12,12 +12,12 @@ const configuration = {
   iceServers: [
     {
     urls: 'stun:stun.l.google.com:19302'
-    },
+    } /*,
     {
     urls: 'turn:turn.anyfirewall.com:443?transport=tcp',
     credential: 'webrtc',
     username: 'webrtc'
-    }
+    } */
   ]
 };
 let room;
@@ -153,7 +153,7 @@ function startWebRTC(isOfferer) {
 
     if (message.sdp) {
         
-        console.log("message SDP received");
+        console.log("message SDP received. " + message.sdp);
       // This is called after receiving an offer or answer from another peer
       pc.setRemoteDescription(new RTCSessionDescription(message.sdp), () => {
         // When receiving an offer lets answer it
@@ -162,7 +162,7 @@ function startWebRTC(isOfferer) {
         }
       }, onError);
     } else if (message.candidate) {
-        console.log("candi info received");
+        console.log("candi info received. " + message.candidate);
       // Add the new ICE candidate to our connections remote description
       pc.addIceCandidate(
         new RTCIceCandidate(message.candidate), onSuccess, onError

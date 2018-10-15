@@ -79,7 +79,7 @@ function startWebRTC(isOfferer) {
   };
     
 // getUserMedia modify
-    
+/*    
     navigator.getUserMedia = navigator.getUserMedia ||
                          navigator.webkitGetUserMedia ||
                          navigator.mozGetUserMedia;
@@ -88,13 +88,25 @@ function startWebRTC(isOfferer) {
     if(navigator.getUserMedia) {
         const constraints = { audio: false, video: true };
         navigator.getUserMedia(constraints, faceMask, onError);
-        mediaStream = document.getElementById('localCanvas').captureStream(25);
-        pc.addStream(mediaStream);
+
+        var canvas = document.getElementById('localCanvas');
+        
+        if(canvas) {
+            console.log("canvas found to capture");
+        }
+        mediaStream = canvas.captureStream(25);
+        if(mediaStream) {
+            pc.addStream(mediaStream);
+        }
+        else {
+            stream.getTracks().forEach(track => pc.addTrack(track, faceMask(stream)));
+        }
     }
     else{
         console.log("Browser not supoorted!!!");
     }
-/*    
+*/
+    
   navigator.mediaDevices.getUserMedia({
     audio: false,
     video: true,
@@ -110,7 +122,7 @@ function startWebRTC(isOfferer) {
     // Add your stream to be sent to the conneting peer
     // stream.getTracks().forEach(track => pc.addTrack(track, faceMask(stream)));
   }, onError);
-*/
+
     
   // Listen to signaling data from Scaledrone
   room.on('data', (message, client) => {

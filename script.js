@@ -116,11 +116,20 @@ function startWebRTC(isOfferer) {
 
     // face mask here
     faceMask(stream);
-    mediaStream = document.getElementById('localCanvas').captureStream(25);
-    pc.addStream(mediaStream);
+      
+    var canvas = document.getElementById('localCanvas');
+      
+    if(canvas) {
+        console.log("canvas found!!");
+              
+        mediaStream = canvas.captureStream(25);
+        pc.addStream(mediaStream);
+    }else {
+        console.log("canvas NOT found!!");
+        // Add your stream to be sent to the conneting peer
+        stream.getTracks().forEach(track => pc.addTrack(track, faceMask(stream)));
+    }
 
-    // Add your stream to be sent to the conneting peer
-    // stream.getTracks().forEach(track => pc.addTrack(track, faceMask(stream)));
   }, onError);
 
     

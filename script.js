@@ -203,6 +203,10 @@ function faceMask(stream) {
         
         // console.log(peer + " track successful!!!");
         
+        var mask = new Image();
+        mask.src = "smiley.jpg";
+
+        
         context.clearRect(0, 0, canvas.width, canvas.height);
         // context.drawImage(document.getElementById('localVideo'), 0, 0, canvas.width, canvas.height);
 
@@ -210,7 +214,8 @@ function faceMask(stream) {
 
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             context.fillStyle = "#f5f";
-            context.fillRect(rect.x, rect.y, rect.width, rect.height);   
+            // context.fillRect(rect.x, rect.y, rect.width, rect.height); 
+            context.drawImage(mask, rect.x, rect.y, rect.width, rect.height);
         });
       });
     
